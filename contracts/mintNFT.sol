@@ -16,10 +16,10 @@ contract mintNFT is ERC721 {
     }
 
     struct color {
-        byte R;
-        byte G; 
-        byte B;
-        fullFlag;
+        bytes2 R;
+        bytes2 G; 
+        bytes2 B;
+        bytes1 fullFlag;
     }
 
     //_owners : tokenID -> owner address ,   <cat 토큰 -> owner>
@@ -32,9 +32,9 @@ contract mintNFT is ERC721 {
     //mapping from owner to owner's color    <owner -> color>
     mapping (address => color) private _myColor;
     //mapping from owner to owner's color    <color -> owner>
-    mapping (color => adress) private _whoColor;
+    mapping (color => address) private _whoColor;
     //mapping from owner to owner's color    <onwer -> cat 토큰>
-    mapping (adress => tokenID) private _myCats;
+    mapping (address => tokenID) private _myCats;
 
     //color 
     color currentColor;
@@ -49,16 +49,16 @@ contract mintNFT is ERC721 {
     }
 
     function setData(
-        string catName;
-        string yourName;
-        string comment;
-        string favorite;
-        uint32 metDay;
-        uint32 leftDay;
-        address owner;
+        string catName,
+        string yourName,
+        string comment,
+        string favorite,
+        uint32 metDay,
+        uint32 leftDay,
+        address owner
     ) internal {
         require(currentColor.fullFlag != 1, "The planet's stars were full");
-        _catData[tokenID] = cataData(catName, yourName, comment, favorite, metDay, leftDay, msg.sender);
+        _catData[tokenID] = catData(catName, yourName, comment, favorite, metDay, leftDay, msg.sender);
     }
 
 
@@ -66,20 +66,19 @@ contract mintNFT is ERC721 {
     function _beforeTokenTransfer(address _owner) internal {
         if (currentColor.R < 256) {
             currentColor.R++;
-        } else if(currentColor.G < 256)  
+        } else if(currentColor.G < 256)  {
             currentColor.G++;
         } else if(currentColor.B < 256) {
             currentColor.B++;
-            if(currentColor.B == 256){ß
+            if(currentColor.B == 256){
                 currentColor.fullFlag = 1;
             }
         }
             
-        _catData[tokenID] = data;
-        _myCats[_owner] = _tokenID;
-        if(!_myColor[_onwer]) {   
+        _myCats[_owner] = tokenID;
+        if(!_myColor[_owner]) {   
             _myColor[_owner] = currentColor; //msg.sender
-            _whoColor[currentColor] = _onwer;
+            _whoColor[currentColor] = _owner;
         }
     }
 
@@ -94,14 +93,13 @@ contract mintNFT is ERC721 {
     
 
     // return functions
-    function balanceOf (msg.sender);
-    function ownerOf (tokenID);
+
     function catDataOf (uint _tokenID) public view {
         require(tokenID > -1, "This is not valid token");
         return _catData[_tokenID];
     }
     function myColorOf (uint _owner) public view {
-        require(owner != address(0), "This is invalid address");
+        require(_owner != address(0), "This is invalid address");
         return _myColor[_owner];
     }
 
